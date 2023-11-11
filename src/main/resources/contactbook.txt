@@ -1,0 +1,2 @@
+Contact{lastName='Shiba', firstName='Tatsuya', phoneNumber='654891808'}
+Contact{lastName='Ichijo', firstName='Masaki', phoneNumber='987195497d'}
