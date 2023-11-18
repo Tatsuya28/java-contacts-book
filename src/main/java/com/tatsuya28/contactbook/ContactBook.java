@@ -1,50 +1,48 @@
 package com.tatsuya28.contactbook;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class ContactBook {
 
-    public static final String CONTACT_BOOK_FILE_PATH = "./src/main/resources/contactbook.txt";
-    public static Scanner sc = null;
+    public static final String CONTACT_BOOK_FILE_PATH = "./src/main/resources/contact-book.txt";
+    // public static final Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
 
-        sc = new Scanner(System.in);
+        File contactBookFile = getOrCreateContactBookFile(CONTACT_BOOK_FILE_PATH);
 
-        File contactBookFile = getOrCreateContactBookFile();
-
-        Contact newContact = askNewContact();
-        appendContactToContactBook(contactBookFile, newContact);
+        // Contact newContact = askNewContact();
+        // appendContactToContactBook(contactBookFile, newContact);
+        List<Contact> contactList = getContactList(contactBookFile);
+        for (Contact contact : contactList) {
+            System.out.println(contact);
+        }
 
         sc.close();
     }
 
 
     public static String getUserInput(String userRequest) {
-        System.out.println(userRequest);
-        return sc.nextLine();
+        return UserInputProvider.getUserInput(userRequest);
     }
 
-    private static File getOrCreateContactBookFile() {
-        File contactBookFile = new File(ContactBook.CONTACT_BOOK_FILE_PATH);
+    public static File getOrCreateContactBookFile(String filePath) {
+        File contactBookFile = new File(filePath);
 
-        if (contactBookFile.exists()) {
-            return contactBookFile;
+        if (!contactBookFile.exists()) {
+            try {
+                contactBookFile.createNewFile();
+                System.out.printf("The file has been created (%s)%n", filePath);
+            } catch (IOException e) {
+                throw new RuntimeException("Error creating contact book file", e);
+            }
         }
 
-        try {
-            contactBookFile.createNewFile();
-            System.out.printf("The file has been created (%s)%n", ContactBook.CONTACT_BOOK_FILE_PATH);
-            return contactBookFile;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return contactBookFile;
     }
 
     public static Contact askNewContact() {
@@ -54,25 +52,63 @@ public class ContactBook {
 
         Contact newContact = new Contact(userLastName, userFirstName, userPhoneNumber);
 
-        System.out.println(newContact.toString());
+        System.out.println(newContact);
 
         return newContact;
     }
 
-    private static void appendContactToContactBook(File contactBookFile, Contact newContact) {
+    public static void appendContactToContactBook(File contactBookFile, Contact newContact) {
 
         if (contactBookFile == null) {
-            System.out.println("contactBookFile is null: see appendContactToContactBook");
+            System.err.println("contactBookFile is null: see appendContactToContactBook");
             return;
         }
 
         try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(contactBookFile, true))) {
-            fileWriter.append(newContact.toString());
-            fileWriter.append(System.lineSeparator());
-
+            fileWriter.append(newContact.toString()).append(System.lineSeparator());
             System.out.println("Contact added");
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+        } catch (IOException e) {
+            throw new RuntimeException("Error appending contact to contact book", e);
         }
+    }
+
+    private static String extractValueFromContactString(String part) {
+        int startIndex = part.indexOf('=') + 2;
+        int endIndex = part.length() - (part.endsWith("'}") ? 2 : 1);
+        return part.substring(startIndex, endIndex);
+    }
+
+    public static Contact parseContact(String line) {
+        // Assuming the format is always "Contact{lastName='...', firstName='...', phoneNumber='...'}"
+        try {
+            String[] parts = line.split(", ");
+            String lastName = extractValueFromContactString(parts[0]);
+            String firstName = extractValueFromContactString(parts[1]);
+            String phoneNumber = extractValueFromContactString(parts[2]);
+
+            return new Contact(lastName, firstName, phoneNumber);
+        } catch (Exception e) {
+            System.err.println("Error parsing contact: " + line);
+            return null;
+        }
+    }
+
+    public static List<Contact> getContactList(File contactBookFile) {
+        List<Contact> contactList = new ArrayList<>();
+
+        try (BufferedReader fileReader = new BufferedReader(new FileReader(contactBookFile))) {
+            String line;
+
+            while ((line = fileReader.readLine()) != null) {
+                Contact contact = parseContact(line);
+                if (contact != null) {
+                    contactList.add(contact);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading contact book file", e);
+        }
+
+        return contactList;
     }
 }
