@@ -4,11 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -120,5 +118,40 @@ class ContactBookTest {
         assertEquals("Doe", result.get(0).getLastName());
         assertEquals("John", result.get(0).getFirstName());
         assertEquals("123456789", result.get(0).getPhoneNumber());
+    }
+
+    @Test
+    void testSearchContactFound() {
+        // Arrange
+        List<Contact> contactList = new ArrayList<>();
+        Contact contact1 = new Contact("Doe", "John", "123456789");
+        contactList.add(contact1);
+        Contact contact2 = new Contact("Smith", "Alice", "987654321");
+        contactList.add(contact2);
+
+        // Act
+        Contact result = ContactBook.searchContact(contactList, "John");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Doe", result.getLastName());
+        assertEquals("John", result.getFirstName());
+        assertEquals("123456789", result.getPhoneNumber());
+    }
+
+    @Test
+    void testSearchContactNotFound() {
+        // Arrange
+        List<Contact> contactList = new ArrayList<>();
+        Contact contact1 = new Contact("Doe", "John", "123456789");
+        contactList.add(contact1);
+        Contact contact2 = new Contact("Smith", "Alice", "987654321");
+        contactList.add(contact2);
+
+        // Act
+        Contact result = ContactBook.searchContact(contactList, "Bob");
+
+        // Assert
+        assertNull(result);
     }
 }
