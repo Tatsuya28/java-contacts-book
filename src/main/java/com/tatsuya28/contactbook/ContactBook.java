@@ -22,6 +22,10 @@ public class ContactBook {
             System.out.println(contact);
         }
 
+        // Contact search
+        String searchName = getUserInput("Find a contact: ");
+        searchContact(contactList, searchName);
+
         sc.close();
     }
 
@@ -110,5 +114,22 @@ public class ContactBook {
         }
 
         return contactList;
+    }
+
+    public static void searchContact(List<Contact> contactList, String searchName) {
+        boolean found = false;
+
+        for (Contact contact : contactList) {
+            if (contact.getLastName().equalsIgnoreCase(searchName) || contact.getFirstName().equalsIgnoreCase(searchName)) {
+                System.out.println("Contact found:");
+                System.out.println(contact);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            System.out.println("Contact not found with the given name: " + searchName);
+        }
     }
 }
