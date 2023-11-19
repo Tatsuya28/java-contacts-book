@@ -6,7 +6,7 @@ Hello there, here is my first project since ages in java. I am rusty.
 
 [ x ] **Contact addition:** Enable user to add a contact
 
-[  ] **Contact Search:** Implement a search feature allowing users to quickly find a contact by name.
+[ x ] **Contact Search:** Implement a search feature allowing users to quickly find a contact by name.
 
 [  ] **Contact Modification and Deletion:** Add features enabling users to modify the information of an existing contact
 or delete it.
