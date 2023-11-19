@@ -116,20 +116,14 @@ public class ContactBook {
         return contactList;
     }
 
-    public static void searchContact(List<Contact> contactList, String searchName) {
-        boolean found = false;
-
+    public static Contact searchContact(List<Contact> contactList, String searchName) {
         for (Contact contact : contactList) {
             if (contact.getLastName().equalsIgnoreCase(searchName) || contact.getFirstName().equalsIgnoreCase(searchName)) {
-                System.out.println("Contact found:");
-                System.out.println(contact);
-                found = true;
-                break;
+                return contact;
             }
         }
 
-        if (!found) {
-            System.out.println("Contact not found with the given name: " + searchName);
-        }
+        System.err.println("Contact not found with name: " + searchName);
+        return null;
     }
 }

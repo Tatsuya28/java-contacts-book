@@ -129,18 +129,14 @@ class ContactBookTest {
         Contact contact2 = new Contact("Smith", "Alice", "987654321");
         contactList.add(contact2);
 
-        // Redirect System.out to capture printed output
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outputStream));
-
         // Act
-        ContactBook.searchContact(contactList, "john");
+        Contact result = ContactBook.searchContact(contactList, "John");
 
         // Assert
-        assertEquals("Contact found:" + System.lineSeparator() + contact1 + System.lineSeparator(), outputStream.toString());
-
-        // Reset System.out
-        System.setOut(System.out);
+        assertNotNull(result);
+        assertEquals("Doe", result.getLastName());
+        assertEquals("John", result.getFirstName());
+        assertEquals("123456789", result.getPhoneNumber());
     }
 
     @Test
@@ -152,17 +148,10 @@ class ContactBookTest {
         Contact contact2 = new Contact("Smith", "Alice", "987654321");
         contactList.add(contact2);
 
-        // Redirect System.out to capture printed output
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outputStream));
-
         // Act
-        ContactBook.searchContact(contactList, "bob");
+        Contact result = ContactBook.searchContact(contactList, "Bob");
 
         // Assert
-        assertEquals("Contact not found with the given name: bob" + System.lineSeparator(), outputStream.toString());
-
-        // Reset System.out
-        System.setOut(System.out);
+        assertNull(result);
     }
 }
